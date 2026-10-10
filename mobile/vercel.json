@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npm run build:web",
+  "outputDirectory": "dist",
+  "rewrites": [{ "source": "/((?!data/|assets/|_expo/|manifest.webmanifest|icon.svg|sw.js).*)", "destination": "/index.html" }]
+}

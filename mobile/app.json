@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "version": "1.0.0",
+    "userInterfaceStyle": "automatic",
+    "orientation": "default",
+    "name": "Kavyavani",
+    "slug": "kavyavani",
+    "android": {
+      "package": "app.kavyavani.reader"
+    },
+    "scheme": "kavyavani",
+    "web": {
+      "bundler": "metro",
+      "description": "A little room for Hindi poetry.",
+      "output": "single",
+      "name": "Kavyavani",
+      "shortName": "Kavyavani"
+    },
+    "ios": {
+      "bundleIdentifier": "app.kavyavani.reader",
+      "supportsTablet": true
+    },
+    "plugins": [
+      "expo-font"
+    ],
+    "icon": "./public/icon-512.png"
+  }
+}

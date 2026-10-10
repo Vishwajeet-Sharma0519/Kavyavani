@@ -1,0 +1,7 @@
+node_modules/
+dist/
+dist-native/
+test-results/
+.expo/
+src/generated/
+public/data/

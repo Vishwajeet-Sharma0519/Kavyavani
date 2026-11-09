@@ -21,6 +21,7 @@ function romanKey(word: string) {
     .replace(/aa/g, "a")
     .replace(/ee|ii/g, "i")
     .replace(/oo|uu/g, "u")
+    .replace(/ein$/, "e")
     .replace(/w/g, "v");
 }
 
@@ -49,12 +50,10 @@ function editDistance(a: string, b: string, bound: number) {
 
 export function wordSimilarity(word: string, query: string): number {
   if (word === query) return 100;
-  if (
-    /^[a-z]+$/.test(word) &&
-    /^[a-z]+$/.test(query) &&
-    romanKey(word) === romanKey(query)
-  )
-    return 100;
+  const roman = /^[a-z]+$/.test(word) && /^[a-z]+$/.test(query);
+  const wordKey = roman ? romanKey(word) : word;
+  const queryKey = roman ? romanKey(query) : query;
+  if (wordKey === queryKey) return 100;
   if (word.startsWith(query)) return 90;
   if (query.length >= 3 && word.includes(query)) return 75;
   if (query.length < 4 || query.length > 40 || word.length > 42) return 0;
@@ -65,7 +64,13 @@ export function wordSimilarity(word: string, query: string): number {
   )
     return 0;
   const bound = query.length >= 8 ? 2 : 1;
-  const distance = editDistance(word, query, bound);
+  // A spelling can differ in both transliteration and a letter or two.
+  const distance = Math.min(
+    editDistance(wordKey, queryKey, bound),
+    wordKey !== word || queryKey !== query
+      ? editDistance(word, query, bound)
+      : bound + 1,
+  );
   return distance <= bound ? 60 - distance * 10 : 0;
 }
 

@@ -83,3 +83,16 @@ test("poems prioritize a remembered title, spelling variants and mixed author/ve
     /cancelled/,
   );
 });
+
+test("Neeraj's storm poem is the top match for common Roman spellings", async () => {
+  for (const query of [
+    "main tufaano mein",
+    "main tufaanon mein chalnein ka aadi hoon",
+    "maiñ tuufaanoñ me chalane kaa aadii huuñ",
+  ])
+    assert.equal(
+      (await rankPoems(index, catalog, query))[0]?.id,
+      "p-ba56ddaf943b1119",
+      query,
+    );
+});

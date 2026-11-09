@@ -37,7 +37,7 @@ export function usePoemSearch(query: string, enabled = true, retry = 0) {
     };
   }, [query, searching, retry]);
   return {
-    results: query.trim() ? response.results : catalog.poems,
+    results: query.trim() ? (current ? response.results : []) : catalog.poems,
     busy: searching && !current,
     error: searching && current ? response.error : "",
   };

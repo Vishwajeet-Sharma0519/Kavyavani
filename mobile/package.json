@@ -43,7 +43,7 @@
     "web": "expo start --web",
     "data:build": "node scripts/build-data.mjs",
     "typecheck": "node --stack-size=8192 node_modules/typescript/lib/tsc.js --noEmit",
-    "test": "tsx --test tests/core.test.mts",
+    "test": "tsx --test tests/core.test.mts tests/search.test.mts",
     "test:e2e": "playwright test",
     "build:web": "npm run data:build && expo export --platform web && node scripts/finalize-web.mjs",
     "preview": "node scripts/serve.mjs",

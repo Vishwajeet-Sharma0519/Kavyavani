@@ -1,6 +1,6 @@
 import rawCatalog from "../generated/catalog.json";
 import { readChunk, readSearch } from "./loader";
-import { matches, normalizeSearch, searchIndex } from "./search";
+import { rankPoets, rankPoems } from "./rankedSearch";
 import type {
   Catalog,
   Poem,
@@ -23,8 +23,7 @@ export const getPoetById = (id: string) => poetMap.get(id);
 export const getPoemSummary = (id: string) => poemMap.get(id);
 export const getPoemsByPoet = (id: string) =>
   catalog.poems.filter((p) => p.poetId === id);
-export const searchPoets = (q: string) =>
-  catalog.poets.filter((p) => matches(normalizeSearch(p.name), q));
+export const searchPoets = (q: string) => rankPoets(catalog.poets, q);
 export function getSortedPoets(sort: Sort = "az", list = catalog.poets) {
   return [...list].sort(
     (a, b) => collator.compare(a.name, b.name) * (sort === "az" ? 1 : -1),
@@ -78,8 +77,7 @@ export async function searchPoems(
       searchData = undefined;
       throw error;
     });
-  const ids = await searchIndex(await searchData, query, signal);
-  return catalog.poems.filter((_, i) => ids.has(i));
+  return rankPoems(await searchData, catalog, query, signal);
 }
 export function dailyPoet(date = new Date()) {
   const day = Math.floor(

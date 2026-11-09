@@ -60,27 +60,27 @@ function DiscoverContents({
         ].slice(0, 8),
       }));
   };
-  const data = useMemo(
-    () =>
-      tab === "Poems"
-        ? getSortedPoems(
-            state.sort,
-            getFilteredPoems({ genre, script }, results),
-          ).map((p) => p.id)
-        : tab === "Poets"
-          ? getSortedPoets(
-              state.sort,
-              searchPoets(query).filter(
-                (p) => !genre || p.genres.includes(genre),
-              ),
-            ).map((p) => p.id)
-          : state.collections
-              .filter((c) =>
-                matches(normalizeSearch(`${c.name} ${c.description}`), query),
-              )
-              .map((c) => c.id),
-    [tab, state.sort, state.collections, results, query, genre, script],
-  );
+  const data = useMemo(() => {
+    if (tab === "Poems") {
+      const poems = getFilteredPoems({ genre, script }, results);
+      return (query.trim() ? poems : getSortedPoems(state.sort, poems)).map(
+        (p) => p.id,
+      );
+    }
+    if (tab === "Poets") {
+      const poets = searchPoets(query).filter(
+        (p) => !genre || p.genres.includes(genre),
+      );
+      return (query.trim() ? poets : getSortedPoets(state.sort, poets)).map(
+        (p) => p.id,
+      );
+    }
+    return state.collections
+      .filter((c) =>
+        matches(normalizeSearch(`${c.name} ${c.description}`), query),
+      )
+      .map((c) => c.id);
+  }, [tab, state.sort, state.collections, results, query, genre, script]);
   return (
     <ThemeCanvas>
       <FlatList
@@ -115,6 +115,12 @@ function DiscoverContents({
                 "कवि, शीर्षक या कविता की कोई पंक्ति खोजें…",
               )}
             />
+            <Txt muted style={{ fontSize: 12 }}>
+              {t(
+                "Type in देवनागरी, Roman, or اردو. Close spellings work too.",
+                "देवनागरी, Roman या اردو में लिखें। मिलती-जुलती वर्तनी से भी खोजें।",
+              )}
+            </Txt>
             {!query && (
               <Row style={{ flexWrap: "wrap" }}>
                 <Txt muted style={{ fontSize: 12 }}>
@@ -191,7 +197,14 @@ function DiscoverContents({
                   </Row>
                   <Button
                     subtle
-                    label={state.sort === "az" ? "A → Z" : "Z → A"}
+                    disabled={!!query.trim()}
+                    label={
+                      query.trim()
+                        ? t("Best matches", "सबसे नज़दीकी परिणाम")
+                        : state.sort === "az"
+                          ? "A → Z"
+                          : "Z → A"
+                    }
                     onPress={() =>
                       setState((s) => ({
                         ...s,

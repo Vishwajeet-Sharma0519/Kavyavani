@@ -1,5 +1,5 @@
 import { ThemeCanvas } from "../components/ThemeBackdrop";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { FlatList, View } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Heart } from "lucide-react-native";
@@ -35,7 +35,6 @@ export default function PoetScreen({
     [retry, setRetry] = useState(0),
     [narration, setNarration] = useState<string>();
   const { results, busy, error } = usePoemSearch(query, true, retry);
-  const ids = useMemo(() => new Set(results.map((p) => p.id)), [results]);
   if (!poet)
     return (
       <Empty
@@ -46,13 +45,11 @@ export default function PoetScreen({
         )}
       />
     );
-  const works = getSortedPoems(
-      state.sort,
-      getPoemsByPoet(poet.id).filter(
-        (p) => (!genre || p.genre === genre) && ids.has(p.id),
-      ),
-    ),
-    saved = state.poets.includes(poet.id);
+  const filtered = (query.trim() ? results : getPoemsByPoet(poet.id)).filter(
+    (p) => p.poetId === poet.id && (!genre || p.genre === genre),
+  );
+  const works = query.trim() ? filtered : getSortedPoems(state.sort, filtered);
+  const saved = state.poets.includes(poet.id);
   return (
     <ThemeCanvas>
       <FlatList
@@ -146,7 +143,14 @@ export default function PoetScreen({
                   ))}
                   <Button
                     subtle
-                    label={state.sort === "az" ? "A → Z" : "Z → A"}
+                    disabled={!!query.trim()}
+                    label={
+                      query.trim()
+                        ? t("Best matches", "सबसे नज़दीकी परिणाम")
+                        : state.sort === "az"
+                          ? "A → Z"
+                          : "Z → A"
+                    }
                     onPress={() =>
                       setState((s) => ({
                         ...s,

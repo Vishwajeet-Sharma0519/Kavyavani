@@ -385,7 +385,11 @@ function ReaderContents({
           </View>
         </View>
       </ScrollView>
-      <NarrationSheet visible={narration} onClose={() => setNarration(false)} />
+      <NarrationSheet
+        visible={narration}
+        onClose={() => setNarration(false)}
+        poemId={id}
+      />
       <CollectionPicker
         visible={picker}
         onClose={() => setPicker(false)}

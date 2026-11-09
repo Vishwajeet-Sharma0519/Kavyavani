@@ -114,3 +114,7 @@ TypeScript uses a larger Node stack to handle the generated corpus and library t
 - Narration remains deferred, and no new transliteration/translation service is configured.
 - No UI reference image was supplied; the design follows the written parchment-and-burgundy brief.
 - `npm audit` currently reports 22 transitive findings (15 high, 7 moderate) in the Expo/native build toolchain, rooted in `braces`, `node-forge`, and `uuid`. The current latest `braces` / `node-forge` registry releases are also flagged. These packages are not imported into the static reader runtime. No forced downgrade to incompatible Expo/React Native versions was applied. Recheck upstream patches before a native production release; do not expose development tooling publicly.
+
+## Five-poem recitation pilot (9 November 2026)
+
+The narration panel now lists external recording candidates for the five selected poems, with poem-specific matching in the reader. Four have external source links; the Waseem Barelvi recording is pending. These supersede the earlier generic coming-later panel. Audio quality, source availability and reuse rights have not been approved. No audio is generated, hosted or played within the app yet. See [RECITATION-PILOT.md](RECITATION-PILOT.md) for sources, performance directions and remaining dependencies.

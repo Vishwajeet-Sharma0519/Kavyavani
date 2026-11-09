@@ -1,51 +1,97 @@
-import React from "react";
+import React, { useState } from "react";
 import { View } from "react-native";
-import { Headphones } from "lucide-react-native";
+import * as Linking from "expo-linking";
 import { Sheet, Txt, Button } from "./ui";
 import { useApp } from "../state/AppProvider";
+import { recitationSelections } from "../data/recitations";
+
 export function NarrationSheet({
   visible,
   onClose,
+  poemId,
 }: {
   visible: boolean;
   onClose: () => void;
+  poemId?: string;
 }) {
   const { theme, t } = useApp();
+  const [error, setError] = useState(false);
+  const selections = poemId
+    ? recitationSelections.filter((e) => e.poemId === poemId)
+    : recitationSelections;
+  const close = () => {
+    setError(false);
+    onClose();
+  };
+  const openSource = async (url: string) => {
+    setError(false);
+    try {
+      await Linking.openURL(url);
+    } catch {
+      setError(true);
+    }
+  };
   return (
     <Sheet
       visible={visible}
-      onClose={onClose}
-      title={t("Some words deserve a voice.", "कुछ शब्द आवाज़ के हक़दार हैं।")}
+      onClose={close}
+      title={t("Poetry, in a voice", "कविता की आवाज़")}
     >
-      <View
-        style={{
-          backgroundColor: theme.soft,
-          padding: 22,
-          borderRadius: 12,
-          alignItems: "center",
-          gap: 14,
-        }}
-      >
-        <Headphones size={36} strokeWidth={1} color={theme.primary} />
-        <Txt kind="label" style={{ color: theme.primary }}>
-          {t("AI NARRATION · COMING LATER", "AI वाचन · अभी उपलब्ध नहीं")}
-        </Txt>
-      </View>
-      <Txt>
-        {t(
-          "Poetry needs feeling, a thoughtful pause, and the right pronunciation. Emotional Hindi narration is being reserved for a future release.",
-          "कविता को भाव, सही ठहराव और सटीक उच्चारण चाहिए। भावपूर्ण हिंदी वाचन आगे के संस्करण के लिए रखा गया है।",
-        )}
-      </Txt>
       <Txt muted>
         {t(
-          "No audio is generated or played in this version. Read in any of the supplied scripts, and make a collection for another day.",
-          "इस संस्करण में ऑडियो बनाया या चलाया नहीं जाता। उपलब्ध लिपियों में पढ़ें और अपनी पसंद की रचनाएँ सहेजें।",
+          "Explore recording candidates on their original sites. Sound quality is awaiting review; these recordings are not yet available inside KavyaVani. Internet access is required.",
+          "मूल वेबसाइट पर वाचन के विकल्प सुनें। आवाज़ की गुणवत्ता की समीक्षा बाकी है; ये रिकॉर्डिंग अभी काव्यवाणी में उपलब्ध नहीं हैं। इंटरनेट आवश्यक है।",
         )}
       </Txt>
+      {selections.length === 0 && (
+        <Txt>
+          {t(
+            "No recording has been selected for this poem yet.",
+            "इस कविता के लिए अभी वाचन नहीं चुना गया है।",
+          )}
+        </Txt>
+      )}
+      {selections.map((entry) => (
+        <View
+          key={entry.poemId}
+          style={{
+            backgroundColor: theme.soft,
+            padding: 16,
+            borderRadius: 12,
+            gap: 10,
+          }}
+        >
+          <Txt style={{ fontSize: 18 }}>{entry.title}</Txt>
+          <Txt muted>{entry.poet}</Txt>
+          <Txt>{t(entry.direction, entry.directionHi)}</Txt>
+          {entry.url ? (
+            <Button
+              label={t("Open recording source ↗", "वाचन का स्रोत खोलें ↗")}
+              onPress={() => {
+                void openSource(entry.url);
+              }}
+            />
+          ) : (
+            <Txt muted>
+              {t(
+                "A suitable recording is still being sought.",
+                "उपयुक्त वाचन की तलाश जारी है।",
+              )}
+            </Txt>
+          )}
+        </View>
+      ))}
+      {error && (
+        <Txt accessibilityRole="alert">
+          {t(
+            "Could not open the source. Check your connection and try again.",
+            "स्रोत नहीं खुला। इंटरनेट जाँचें और फिर प्रयास करें।",
+          )}
+        </Txt>
+      )}
       <Button
         label={t("Back to the words", "कविता पर लौटें")}
-        onPress={onClose}
+        onPress={close}
       />
     </Sheet>
   );

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import * as Linking from "expo-linking";
 import { Sheet, Txt, Button } from "./ui";
 import { useApp } from "../state/AppProvider";
@@ -16,11 +16,13 @@ export function NarrationSheet({
 }) {
   const { theme, t } = useApp();
   const [error, setError] = useState(false);
+  const [activeVideo, setActiveVideo] = useState<string>();
   const selections = poemId
     ? recitationSelections.filter((e) => e.poemId === poemId)
     : recitationSelections;
   const close = () => {
     setError(false);
+    setActiveVideo(undefined);
     onClose();
   };
   const openSource = async (url: string) => {
@@ -39,8 +41,8 @@ export function NarrationSheet({
     >
       <Txt muted>
         {t(
-          "Explore recording candidates on their original sites. Sound quality is awaiting review; these recordings are not yet available inside KavyaVani. Internet access is required.",
-          "मूल वेबसाइट पर वाचन के विकल्प सुनें। आवाज़ की गुणवत्ता की समीक्षा बाकी है; ये रिकॉर्डिंग अभी काव्यवाणी में उपलब्ध नहीं हैं। इंटरनेट आवश्यक है।",
+          "Listen to performances from YouTube or Rekhta. Internet access is required.",
+          "YouTube या रेख़्ता पर उपलब्ध वाचन सुनें। इंटरनेट आवश्यक है।",
         )}
       </Txt>
       {selections.length === 0 && (
@@ -51,36 +53,61 @@ export function NarrationSheet({
           )}
         </Txt>
       )}
-      {selections.map((entry) => (
-        <View
-          key={entry.poemId}
-          style={{
-            backgroundColor: theme.soft,
-            padding: 16,
-            borderRadius: 12,
-            gap: 10,
-          }}
-        >
-          <Txt style={{ fontSize: 18 }}>{entry.title}</Txt>
-          <Txt muted>{entry.poet}</Txt>
-          <Txt>{t(entry.direction, entry.directionHi)}</Txt>
-          {entry.url ? (
-            <Button
-              label={t("Open recording source ↗", "वाचन का स्रोत खोलें ↗")}
-              onPress={() => {
-                void openSource(entry.url);
-              }}
-            />
-          ) : (
-            <Txt muted>
-              {t(
-                "A suitable recording is still being sought.",
-                "उपयुक्त वाचन की तलाश जारी है।",
-              )}
-            </Txt>
-          )}
-        </View>
-      ))}
+      {selections.map((entry) => {
+        const videoId =
+          Platform.OS === "web"
+            ? /^https:\/\/www\.youtube\.com\/watch\?v=([\w-]{11})$/.exec(
+                entry.url,
+              )?.[1]
+            : undefined;
+        return (
+          <View
+            key={entry.poemId}
+            style={{
+              backgroundColor: theme.soft,
+              padding: 16,
+              borderRadius: 12,
+              gap: 10,
+            }}
+          >
+            <Txt style={{ fontSize: 18 }}>{entry.title}</Txt>
+            <Txt muted>{entry.poet}</Txt>
+            {visible && videoId && activeVideo === videoId ? (
+              <iframe
+                title={entry.title}
+                src={`https://www.youtube.com/embed/${videoId}?playsinline=1`}
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                style={{ width: "100%", minWidth: 200, height: 220, border: 0 }}
+              />
+            ) : videoId ? (
+              <Button
+                label={t("Show YouTube player", "YouTube प्लेयर खोलें")}
+                onPress={() => setActiveVideo(videoId)}
+              />
+            ) : null}
+            {entry.url ? (
+              <Button
+                label={
+                  entry.url.includes("rekhta.org")
+                    ? t("Listen on Rekhta ↗", "रेख़्ता पर सुनें ↗")
+                    : t("Open on YouTube ↗", "YouTube पर खोलें ↗")
+                }
+                onPress={() => {
+                  void openSource(entry.url);
+                }}
+              />
+            ) : (
+              <Txt muted>
+                {t(
+                  "A suitable recording is still being sought.",
+                  "उपयुक्त वाचन की तलाश जारी है।",
+                )}
+              </Txt>
+            )}
+          </View>
+        );
+      })}
       {error && (
         <Txt accessibilityRole="alert">
           {t(

@@ -1,6 +1,6 @@
 # Five-poem recitation pilot
 
-Prepared 9 November 2026. These are audition candidates, not approved audio. No audio has been generated, downloaded, licensed, or assessed by listening. The app opens the original external sources; it does not play or cache their audio.
+Prepared 9 November 2026. These are audition candidates. Playback uses the original providers, and audio quality remains to be assessed by listening.
 
 | Poem | Source candidate | Performance direction |
 | --- | --- | --- |
@@ -24,8 +24,8 @@ Before hosting recordings, document permission for the poem and recording, narra
 
 ## Implementation and remaining work
 
-The five stable catalog IDs and external candidates are in src/data/recitations.ts. Reader narration opens only the matching entry; other narration entry points show the five-poem selection. Waseem's entry explicitly remains pending. There is no invented progress, AI generation, or in-app playback.
+The five stable catalog IDs and sources are in src/data/recitations.ts. The reader shows the matching poem. On web, the three YouTube entries offer an embedded player and an external fallback. Rekhta audio remains on Rekhta. Waseem's entry is pending.
 
 Next dependency: an approved recording with hosting rights, or a connected speech provider plus an authorized voice and script. Once supplied, implement actual audio playback and interruption/error handling against that real asset.
 
-The original source dataset kavya_merged_final.json was already deleted in the working tree at the start of this task. Standard data rebuild and core tests depend on that file; do not recreate or overwrite it without understanding the user's removal. Existing generated catalog data remains available.
+The failed demo commit removed kavya_merged_final.json. The exact dataset from the initial commit was restored because the production build and core tests depend on it.

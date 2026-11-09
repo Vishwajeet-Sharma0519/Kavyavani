@@ -33,7 +33,7 @@ The production preview is at `http://localhost:4173`. Use a web server, not a `f
 - Every theme includes soft gradient backgrounds, glowing accents, and gradient controls. Rose & Romance has a pink palette with translucent shaded hearts; Forest Poetry has deep forest greens with leaves and flowers; Minimal Monochrome uses dark blues. Decorative SVGs are static, local, and hidden from assistive technology, with no added runtime dependency or network request.
 - Library JSON export / restore, including validation and confirmation before replacing local data.
 - PWA manifest, app icons, bundled fonts, and a service worker. After the initial online installation, the app shell and cached poem batches can be read offline. An unopened poem still needs a connection. Full-text search becomes available offline after its index has been downloaded and cached. Browsers may evict caches.
-- Narration buttons that open a clear “coming later” explanation. No synthetic timer, pretend audio, or browser TTS.
+- A five-poem recitation panel with YouTube players on web where a YouTube source is listed, and links to YouTube or Rekhta.
 
 ## Free deployment
 
@@ -79,7 +79,7 @@ The active theme applies before the normal app UI is displayed. Storage-write fa
 
 ## Emotional Hindi narration — intentionally deferred
 
-`src/services/narration.ts` defines a provider interface only. There is **no working audio generator/player**, no recently-played history, and no listening statistics in this release. This follows the requirement to wait for convincing emotional Hindi recitation instead of shipping ordinary text-to-speech.
+`src/services/narration.ts` defines an unused generation provider interface. The recitation panel uses third-party recordings. AI generation, listening history, and listening statistics remain unimplemented.
 
 To implement it later:
 
@@ -117,4 +117,4 @@ TypeScript uses a larger Node stack to handle the generated corpus and library t
 
 ## Five-poem recitation pilot (9 November 2026)
 
-The narration panel now lists external recording candidates for the five selected poems, with poem-specific matching in the reader. Four have external source links; the Waseem Barelvi recording is pending. These supersede the earlier generic coming-later panel. Audio quality, source availability and reuse rights have not been approved. No audio is generated, hosted or played within the app yet. See [RECITATION-PILOT.md](RECITATION-PILOT.md) for sources, performance directions and remaining dependencies.
+The reader shows a matching recitation panel for each selected poem. Three entries offer a YouTube player on web and a source link, Bashir Badr's entry links to Rekhta, and the Waseem Barelvi recording is pending. Embedded playback depends on YouTube availability. See [RECITATION-PILOT.md](RECITATION-PILOT.md) for sources and performance directions.

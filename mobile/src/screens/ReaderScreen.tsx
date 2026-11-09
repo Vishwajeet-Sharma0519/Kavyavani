@@ -36,6 +36,7 @@ import type { RootRoutes } from "../navigation/types";
 import { fonts } from "../theme/themes";
 import { toggleId } from "../state/model";
 import { NarrationSheet } from "../components/NarrationSheet";
+import { recitationSelections } from "../data/recitations";
 import { CollectionPicker } from "../components/CollectionEditor";
 import { shareText } from "../services/sharing";
 export default function ReaderScreen(
@@ -59,6 +60,7 @@ function ReaderContents({
     [picker, setPicker] = useState(false),
     [notice, setNotice] = useState(""),
     [progress, setProgress] = useState(0);
+  const recitation = recitationSelections.find((entry) => entry.poemId === id);
   const scroll = useRef<ScrollView>(null),
     last = useRef(state.positions[id] ?? 0),
     restored = useRef(false),
@@ -360,10 +362,11 @@ function ReaderContents({
               )}
             </Txt>
             <Button
-              label={t(
-                "Listen with feeling · coming later",
-                "भावपूर्ण वाचन · जल्द उपलब्ध",
-              )}
+              label={
+                recitation?.url
+                  ? t("Listen to the recitation", "वाचन सुनें")
+                  : t("Recitation availability", "वाचन की उपलब्धता")
+              }
               subtle
               icon={<Headphones size={19} color={theme.primary} />}
               onPress={() => setNarration(true)}

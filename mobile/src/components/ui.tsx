@@ -623,7 +623,7 @@ export function PoemCard({
       <Row style={{ gap: 0 }}>
         {onListen && (
           <IconButton
-            label={t("AI narration · coming later", "AI वाचन · जल्द उपलब्ध")}
+            label={t("Find a recitation", "वाचन खोजें")}
             onPress={onListen}
           >
             <Headphones size={18} color={theme.muted} />

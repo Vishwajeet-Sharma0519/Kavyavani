@@ -365,7 +365,7 @@ function ReaderContents({
               label={
                 recitation?.url
                   ? t("Listen to the recitation", "वाचन सुनें")
-                  : t("Recitation availability", "वाचन की उपलब्धता")
+                  : t("Find recitation on YouTube", "YouTube पर वाचन खोजें")
               }
               subtle
               icon={<Headphones size={19} color={theme.primary} />}

@@ -33,7 +33,7 @@ export default function PoetScreen({
     [genre, setGenre] = useState(""),
     [tab, setTab] = useState("Works"),
     [retry, setRetry] = useState(0),
-    [narration, setNarration] = useState(false);
+    [narration, setNarration] = useState<string>();
   const { results, busy, error } = usePoemSearch(query, true, retry);
   const ids = useMemo(() => new Set(results.map((p) => p.id)), [results]);
   if (!poet)
@@ -187,7 +187,7 @@ export default function PoetScreen({
           </View>
         }
         renderItem={({ item }) => (
-          <PoemCard poem={item} onListen={() => setNarration(true)} />
+          <PoemCard poem={item} onListen={() => setNarration(item.id)} />
         )}
         ListEmptyComponent={
           tab === "About" ? null : busy ? (
@@ -214,8 +214,9 @@ export default function PoetScreen({
         }
         ListFooterComponent={
           <NarrationSheet
-            visible={narration}
-            onClose={() => setNarration(false)}
+            visible={!!narration}
+            poemId={narration}
+            onClose={() => setNarration(undefined)}
           />
         }
       />

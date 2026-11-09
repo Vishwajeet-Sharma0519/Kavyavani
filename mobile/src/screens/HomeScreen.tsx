@@ -247,10 +247,7 @@ export default function HomeScreen() {
               />
               <Row style={{ gap: 2 }}>
                 <IconButton
-                  label={t(
-                    "AI narration · coming later",
-                    "AI वाचन · जल्द उपलब्ध",
-                  )}
+                  label={t("Find a recitation", "वाचन खोजें")}
                   onPress={() => setNarration(true)}
                 >
                   <Headphones size={20} color={theme.primary} />
@@ -362,7 +359,11 @@ export default function HomeScreen() {
           {t("Make a little room for poetry.", "कविता के लिए थोड़ी जगह बनाइए।")}
         </Txt>
       </View>
-      <NarrationSheet visible={narration} onClose={() => setNarration(false)} />
+      <NarrationSheet
+        visible={narration}
+        onClose={() => setNarration(false)}
+        poemId={poem?.id}
+      />
     </Screen>
   );
 }

@@ -4,25 +4,46 @@ import * as Linking from "expo-linking";
 import { Sheet, Txt, Button } from "./ui";
 import { useApp } from "../state/AppProvider";
 import { recitationSelections } from "../data/recitations";
+import { getPoemSummary, getPoetById } from "../data/repository";
+import { recitationSearchUrl } from "../data/recitationSearch";
 
 export function NarrationSheet({
   visible,
   onClose,
   poemId,
+  poemIds,
 }: {
   visible: boolean;
   onClose: () => void;
   poemId?: string;
+  poemIds?: string[];
 }) {
   const { theme, t } = useApp();
   const [error, setError] = useState(false);
   const [activeVideo, setActiveVideo] = useState<string>();
-  const selections = poemId
-    ? recitationSelections.filter((e) => e.poemId === poemId)
-    : recitationSelections;
+  const [limit, setLimit] = useState(20);
+  const ids = poemId
+    ? [poemId]
+    : (poemIds ?? recitationSelections.map((e) => e.poemId));
+  const selections = ids.slice(0, limit).flatMap((id) => {
+    const poem = getPoemSummary(id);
+    if (!poem) return [];
+    const source = recitationSelections.find((e) => e.poemId === id);
+    const poet = getPoetById(poem.poetId)?.name ?? "";
+    return [
+      {
+        poemId: id,
+        title: source?.title ?? poem.firstLine ?? poem.title,
+        poet,
+        url: source?.url ?? "",
+        searchUrl: recitationSearchUrl(poem, poet),
+      },
+    ];
+  });
   const close = () => {
     setError(false);
     setActiveVideo(undefined);
+    setLimit(20);
     onClose();
   };
   const openSource = async (url: string) => {
@@ -41,8 +62,8 @@ export function NarrationSheet({
     >
       <Txt muted>
         {t(
-          "Listen to performances from YouTube or Rekhta. Internet access is required.",
-          "YouTube या रेख़्ता पर उपलब्ध वाचन सुनें। इंटरनेट आवश्यक है।",
+          "Open a recording or search YouTube using the poem and poet. Search results may include explanations or different versions. Internet access is required.",
+          "वाचन खोलें या कविता और कवि के नाम से YouTube पर खोजें। परिणामों में व्याख्याएँ और अलग संस्करण भी हो सकते हैं। इंटरनेट आवश्यक है।",
         )}
       </Txt>
       {selections.length === 0 && (
@@ -100,14 +121,27 @@ export function NarrationSheet({
             ) : (
               <Txt muted>
                 {t(
-                  "A suitable recording is still being sought.",
-                  "उपयुक्त वाचन की तलाश जारी है।",
+                  "Find a performance of this poem on YouTube.",
+                  "इस कविता का वाचन YouTube पर खोजें।",
                 )}
               </Txt>
             )}
+            <Button
+              label={t("Search YouTube ↗", "YouTube पर खोजें ↗")}
+              subtle={!!entry.url}
+              onPress={() => {
+                void openSource(entry.searchUrl);
+              }}
+            />
           </View>
         );
       })}
+      {ids.length > limit && (
+        <Button
+          label={t("Show more poems", "और कविताएँ दिखाएँ")}
+          onPress={() => setLimit((value) => value + 20)}
+        />
+      )}
       {error && (
         <Txt accessibilityRole="alert">
           {t(

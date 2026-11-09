@@ -98,8 +98,8 @@ export default function CollectionScreen({
             </Row>
             <Button
               label={t(
-                "Listen to collection · coming later",
-                "संग्रह का वाचन · जल्द उपलब्ध",
+                "Find recitations for this collection",
+                "इस संग्रह के वाचन खोजें",
               )}
               icon={<Headphones size={17} color={theme.primary} />}
               onPress={() => setNarration(true)}
@@ -184,6 +184,7 @@ export default function CollectionScreen({
               onClose={() => setEdit(false)}
             />
             <NarrationSheet
+              poemIds={c.poemIds}
               visible={narration}
               onClose={() => setNarration(false)}
             />
